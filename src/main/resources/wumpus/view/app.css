@@ -1,0 +1,98 @@
+/* Светлый плоский стиль: белые поверхности, тонкие границы, без теней и градиентов */
+.root {
+    /* PT Sans — шрифт, созданный под кириллицу: системный шрифт Mac в JavaFX рвёт буквы, жирный Arial тяжёлый.
+       Если шрифта нет (не macOS), JavaFX возьмёт шрифт по умолчанию. */
+    -fx-font-family: "PT Sans";
+    -fx-font-size: 13px;
+    -fx-background-color: #ffffff;
+    -fx-base: #f7f6f3;
+    -fx-accent: #185fa5;
+    -fx-focus-color: #378add;
+    -fx-faint-focus-color: transparent;
+}
+
+.toolbar-row {
+    -fx-padding: 8 12 8 12;
+    -fx-border-color: #e4e2dc;
+    -fx-border-width: 0 0 1 0;
+}
+
+.title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.muted {
+    -fx-text-fill: #6b6a65;
+}
+
+.panel {
+    -fx-padding: 12;
+    -fx-border-color: #e4e2dc;
+    -fx-border-width: 0 0 0 1;
+}
+
+.legend {
+    -fx-text-fill: #6b6a65;
+}
+
+.legend .label {
+    -fx-text-fill: #6b6a65;
+    -fx-font-size: 12px;
+}
+
+.button, .toggle-button, .text-field {
+    -fx-background-radius: 6;
+}
+
+.stat {
+    -fx-background-color: #f1efe8;
+    -fx-background-radius: 8;
+    -fx-padding: 6 10 6 10;
+}
+
+.stat-name {
+    -fx-text-fill: #6b6a65;
+    -fx-font-size: 11px;
+}
+
+.stat-value {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.status {
+    -fx-text-fill: #0f6e56;
+    -fx-font-weight: bold;
+}
+
+.message {
+    -fx-text-fill: #854f0b;
+}
+
+.section {
+    -fx-font-weight: bold;
+    -fx-padding: 8 0 0 0;
+}
+
+.warning-text {
+    -fx-text-fill: #854f0b;
+}
+
+.error-text {
+    -fx-text-fill: #a32d2d;
+}
+
+.text-field.invalid {
+    -fx-border-color: #e24b4a;
+    -fx-border-width: 2;
+    -fx-border-radius: 6;
+}
+
+.value {
+    -fx-font-weight: bold;
+}
+
+.text-area {
+    -fx-font-size: 12.5px;
+}

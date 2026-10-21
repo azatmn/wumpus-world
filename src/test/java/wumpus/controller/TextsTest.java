@@ -28,11 +28,9 @@ class TextsTest {
         c.stepOnce();
         c.stepOnce();
         c.stepOnce();
-        // шаг 3 вывел Вампуса и выстрелил; крик охотник услышит в начале шага 4
-        assertEquals("в 2,1, жив", Texts.wumpus(c.hunter()));
-        assertEquals("нет", Texts.arrow(c.hunter()));
-        c.stepOnce();
+        // шаг 3 вывел Вампуса и выстрелил; крик охотник слышит сразу после выстрела
         assertEquals("убит", Texts.wumpus(c.hunter()));
+        assertEquals("нет", Texts.arrow(c.hunter()));
         while (!c.world().over()) {
             c.stepOnce();
             if (c.hunter().knownGold() != null && !c.hunter().hasGold()) {

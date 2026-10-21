@@ -145,6 +145,35 @@ class HunterTest {
     }
 
     @Test
+    void perceiveTwiceChangesNothing() {
+        World world = new World(Cave.pdfExample());
+        Hunter hunter = new Hunter(4);
+        world.execute(hunter.next(world.percept()));
+        hunter.perceive(world.percept());
+        int clauses = hunter.clauseCount();
+        hunter.perceive(world.percept());
+        assertEquals(clauses, hunter.clauseCount());
+        assertEquals(p(4, 2), hunter.position(), "шаг вперёд учтён один раз");
+        world.execute(hunter.next(world.percept()));
+        assertEquals(p(4, 2), hunter.position(), "и next после perceive не сдвигает охотника ещё раз");
+    }
+
+    @Test
+    void screamHeardRightAfterShot() {
+        World world = new World(Cave.pdfExample());
+        Hunter hunter = new Hunter(4);
+        Action a = hunter.next(world.percept());
+        while (a != Action.SHOOT) {
+            world.execute(a);
+            a = hunter.next(world.percept());
+        }
+        world.execute(a);
+        assertFalse(hunter.wumpusDead());
+        hunter.perceive(world.percept());
+        assertTrue(hunter.wumpusDead());
+    }
+
+    @Test
     void bumpKeepsHunterInPlace() {
         Hunter hunter = new Hunter(4);
         assertEquals(Action.FORWARD, hunter.next(Percept.NONE));

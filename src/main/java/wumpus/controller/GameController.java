@@ -80,6 +80,7 @@ public class GameController {
     /** Одно действие охотника. */
     private void act() {
         world.execute(hunter.next(world.percept()));
+        hunter.perceive(world.percept());
         if (world.over()) {
             pause();
         }

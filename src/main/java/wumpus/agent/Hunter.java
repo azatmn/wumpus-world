@@ -69,7 +69,7 @@ public final class Hunter {
         if (finished) {
             throw new IllegalStateException("Охотник уже выбрался из пещеры");
         }
-        observe(percept);
+        perceive(percept);
         if (plan.isEmpty()) {
             decide(percept);
         }
@@ -86,8 +86,14 @@ public final class Hunter {
         return action;
     }
 
-    /** Последствия прошлого действия и новое измерение — в базу знаний. */
-    private void observe(Percept percept) {
+    /**
+     * Последствия прошлого действия и новое измерение — в базу знаний. Вызывать сразу после действия
+     * (тогда охотник сразу «слышит» крик и знает, что взял золото); повторный вызов ничего не делает.
+     */
+    public void perceive(Percept percept) {
+        if (last == null && !visited.isEmpty()) {
+            return;
+        }
         if (last == Action.FORWARD && !percept.bump()) {
             position = position.step(facing);
         }
@@ -116,6 +122,7 @@ public final class Hunter {
                 kb.tell(Rules.glitter(position, percept.glitter(), size));
             }
         }
+        last = null;
     }
 
     private void decide(Percept percept) {
