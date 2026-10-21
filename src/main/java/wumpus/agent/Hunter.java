@@ -255,13 +255,12 @@ public final class Hunter {
         return planWalk(targets);
     }
 
-    /**
-     * Ближайшая непосещённая комната, опасность которой не доказана. Сюда охотник попадает, только когда
-     * Вампус уже убит или его положение выяснено, поэтому риск — это только яма.
-     */
+    /** Ближайшая непосещённая комната, опасность которой не доказана — но и не исключена. */
     private boolean planRisk() {
         List<Position> targets = knowledge.values().stream()
-                .filter(k -> !k.visited() && k.pit() == Status.MAYBE).map(CellKnowledge::cell).toList();
+                .filter(k -> !k.visited() && !k.safe() && k.pit() != Status.YES
+                        && (wumpusDead || k.wumpus() != Status.YES))
+                .map(CellKnowledge::cell).toList();
         return planWalk(targets);
     }
 

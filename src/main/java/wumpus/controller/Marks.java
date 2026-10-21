@@ -26,32 +26,30 @@ public final class Marks {
         if (k.safe() && !k.visited()) {
             result.add("OK");
         }
-        add(result, "P", k.pit(), hunter, cell, Percept::breeze, false);
+        add(result, "P", k.pit(), hunter, cell, Percept::breeze);
         if (!hunter.wumpusDead()) {
-            add(result, "W", k.wumpus(), hunter, cell, Percept::stench, true);
+            add(result, "W", k.wumpus(), hunter, cell, Percept::stench);
         }
         if (!hunter.hasGold()) {
-            add(result, "G", k.gold(), hunter, cell, Percept::glitter, true);
+            add(result, "G", k.gold(), hunter, cell, Percept::glitter);
         }
         return result;
     }
 
     private static void add(List<String> result, String letter, Status status, Hunter hunter, Position cell,
-                            Predicate<Percept> sensor, boolean selfCounts) {
+                            Predicate<Percept> sensor) {
         if (status == Status.YES) {
             result.add(letter + "!");
-        } else if (status == Status.MAYBE && sensedNear(hunter, cell, sensor, selfCounts)) {
+        } else if (status == Status.MAYBE && sensedNear(hunter, cell, sensor)) {
             result.add(letter + "?");
         }
     }
 
-    /** Почувствовали ли рядом (или в самой комнате, если датчик чувствует и её). */
-    private static boolean sensedNear(Hunter hunter, Position cell, Predicate<Percept> sensor, boolean selfCounts) {
+    /** Почувствовали ли в самой комнате или рядом. */
+    private static boolean sensedNear(Hunter hunter, Position cell, Predicate<Percept> sensor) {
         int size = (int) Math.round(Math.sqrt(hunter.knowledge().size()));
         List<Position> around = new ArrayList<>(cell.neighbors(size));
-        if (selfCounts) {
-            around.add(cell);
-        }
+        around.add(cell);
         for (Position p : around) {
             Percept seen = hunter.knowledge().get(p).percept();
             if (seen != null && sensor.test(seen)) {

@@ -103,9 +103,9 @@ class GameControllerTest {
         c.setSpeed(4);
         c.start();
         c.tick(10 * SECOND);
-        c.tick(5 * SECOND);
-        c.tick(5 * SECOND + SECOND / 2);
-        assertEquals(2, c.world().actions());
+        c.tick(5_300_000_000L);
+        c.tick(5_800_000_000L);
+        assertEquals(2, c.world().actions(), "время назад — как новый отсчёт, без долга");
     }
 
     @Test

@@ -108,6 +108,9 @@ class HunterTest {
             if (!world.alive()) {
                 deaths++;
                 assertTrue(hunter.journal().getLast().risky(), "seed " + seed + ": погиб без риска");
+                CellKnowledge where = hunter.knowledge().get(world.position());
+                assertNotEquals(Status.YES, where.pit(), "seed " + seed + ": пошёл в доказанную яму");
+                assertNotEquals(Status.YES, where.wumpus(), "seed " + seed + ": пошёл к доказанному Вампусу");
             }
         }
         assertTrue(deaths > 0, "в выборке должны быть смерти, иначе тест ничего не проверяет");
