@@ -77,6 +77,7 @@ public final class Hunter {
         switch (action) {
             case TURN_LEFT -> facing = facing.left();
             case TURN_RIGHT -> facing = facing.right();
+            case SHOOT -> hasArrow = false;
             case CLIMB -> finished = true;
             default -> {
             }
@@ -94,7 +95,6 @@ public final class Hunter {
             plan.clear();
         }
         if (last == Action.SHOOT) {
-            hasArrow = false;
             kb.tell(Rules.arrow(position, facing, percept.scream(), size));
             if (percept.scream()) {
                 wumpusDead = true;
@@ -197,7 +197,7 @@ public final class Hunter {
         if (percept.breeze()) {
             sensed(result, "рядом яма, может быть в ", Kind.PIT);
         }
-        if (percept.stench() && !wumpusDead) {
+        if (percept.stench()) {
             sensed(result, "рядом Вампус, может быть в ", Kind.WUMPUS);
         }
         if (percept.glitter() && !hasGold) {
@@ -255,24 +255,14 @@ public final class Hunter {
         return planWalk(targets);
     }
 
-    /** Наименее опасная непосещённая комната рядом с посещёнными: где опасность не доказана. */
+    /**
+     * Ближайшая непосещённая комната, опасность которой не доказана. Сюда охотник попадает, только когда
+     * Вампус уже убит или его положение выяснено, поэтому риск — это только яма.
+     */
     private boolean planRisk() {
-        for (int risk = 1; risk <= 2; risk++) {
-            List<Position> targets = new ArrayList<>();
-            for (CellKnowledge k : knowledge.values()) {
-                if (k.visited() || k.pit() == Status.YES || (!wumpusDead && k.wumpus() == Status.YES)) {
-                    continue;
-                }
-                int unknown = (k.pit() == Status.MAYBE ? 1 : 0) + (!wumpusDead && k.wumpus() == Status.MAYBE ? 1 : 0);
-                if (unknown == risk) {
-                    targets.add(k.cell());
-                }
-            }
-            if (planWalk(targets)) {
-                return true;
-            }
-        }
-        return false;
+        List<Position> targets = knowledge.values().stream()
+                .filter(k -> !k.visited() && k.pit() == Status.MAYBE).map(CellKnowledge::cell).toList();
+        return planWalk(targets);
     }
 
     private boolean planWalk(List<Position> targets) {
@@ -375,6 +365,11 @@ public final class Hunter {
 
     public boolean hasGold() {
         return hasGold;
+    }
+
+    /** Сколько действий ещё осталось от текущего решения. */
+    public int planned() {
+        return plan.size();
     }
 
     public boolean finished() {

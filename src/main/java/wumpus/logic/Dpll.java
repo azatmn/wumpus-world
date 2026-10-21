@@ -86,9 +86,6 @@ public final class Dpll {
 
     /** Откатить все решения выше уровня target. */
     private void backjump(int target) {
-        if (currentLevel() <= target) {
-            return;
-        }
         int size = levelStart.get(target);
         while (trailSize > size) {
             value[Math.abs(trail[--trailSize])] = 0;

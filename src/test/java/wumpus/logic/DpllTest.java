@@ -124,6 +124,32 @@ class DpllTest {
     }
 
     @Test
+    void agreesWithBruteForceOnHardRandom3Sat() {
+        // около 4.3 предложений на переменную — самые трудные формулы: много откатов и выученных причин
+        Random random = new Random(11);
+        int sat = 0;
+        for (int round = 0; round < 1500; round++) {
+            int vars = 8 + random.nextInt(7);
+            int count = (int) Math.round(vars * (3.8 + random.nextDouble()));
+            List<int[]> f = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                int[] c = new int[3];
+                for (int k = 0; k < 3; k++) {
+                    c[k] = (1 + random.nextInt(vars)) * (random.nextBoolean() ? 1 : -1);
+                }
+                f.add(c);
+            }
+            boolean[] m = Dpll.solve(vars, f);
+            assertEquals(bruteForce(vars, f), m != null, "раунд " + round);
+            if (m != null) {
+                assertTrue(satisfies(m, f), "раунд " + round);
+                sat++;
+            }
+        }
+        assertTrue(sat > 300 && sat < 1200, "смесь выполнимых и невыполнимых: " + sat);
+    }
+
+    @Test
     void literalOutsideVariablesRejected() {
         assertThrows(IllegalArgumentException.class, () -> Dpll.solve(2, cnf(new int[]{3})));
         assertThrows(IllegalArgumentException.class, () -> Dpll.solve(2, cnf(new int[]{0})));

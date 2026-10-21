@@ -2,6 +2,8 @@ package wumpus.agent;
 
 import org.junit.jupiter.api.Test;
 import wumpus.logic.Status;
+import wumpus.model.Action;
+import wumpus.model.Percept;
 import wumpus.model.Cave;
 import wumpus.model.CaveGenerator;
 import wumpus.model.CaveSpec;
@@ -70,6 +72,7 @@ class HunterTest {
         assertEquals(p(2, 2), hunter.knownGold());
         assertTrue(hunter.journal().stream().noneMatch(Turn::risky));
         assertTrue(hunter.journal().get(3).conclusions().contains("крик — Вампус убит"));
+        assertFalse(hunter.journal().get(4).conclusions().contains("крик — Вампус убит"), "сообщение — один раз");
     }
 
     @Test
@@ -134,6 +137,31 @@ class HunterTest {
         assertTrue(world.over());
         assertTrue(world.alive());
         assertEquals(2, j.size());
+        assertEquals(Status.NO, hunter.knowledge().get(p(4, 4)).wumpus(), "тишина после выстрела — на линии Вампуса нет");
+        assertEquals(Status.MAYBE, hunter.knowledge().get(p(1, 1)).wumpus());
+    }
+
+    @Test
+    void bumpKeepsHunterInPlace() {
+        Hunter hunter = new Hunter(4);
+        assertEquals(Action.FORWARD, hunter.next(Percept.NONE));
+        hunter.next(new Percept(false, false, false, true, false));
+        assertEquals(p(4, 1), hunter.position(), "удар о стену — охотник остался на месте");
+    }
+
+    @Test
+    void grabCountsOnlyWhenGlitterIsGone() {
+        World world = new World(Cave.pdfExample());
+        Hunter hunter = new Hunter(4);
+        Action a = hunter.next(world.percept());
+        while (a != Action.GRAB) {
+            world.execute(a);
+            a = hunter.next(world.percept());
+        }
+        Percept stillGlitter = world.percept();
+        assertTrue(stillGlitter.glitter());
+        hunter.next(stillGlitter);
+        assertFalse(hunter.hasGold(), "блеск остался — золото не взято");
     }
 
     @Test

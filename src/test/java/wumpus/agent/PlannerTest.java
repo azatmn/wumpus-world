@@ -71,6 +71,8 @@ class PlannerTest {
         assertEquals(List.of(p(3, 1)), Planner.cheapest(p(4, 1), Direction.UP, both, here, 4));
         assertNull(Planner.cheapest(p(4, 1), Direction.UP, List.of(p(1, 1)), here, 4));
         assertNull(Planner.cheapest(p(4, 1), Direction.UP, List.of(), here, 4));
+        assertEquals(List.of(p(3, 2)), Planner.cheapest(p(3, 1), Direction.UP, List.of(p(3, 2), p(4, 1)), Set.of(p(3, 1)), 4),
+                "при равной цене — первая в списке");
     }
 
     @Test
