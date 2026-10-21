@@ -45,12 +45,10 @@ public final class Marks {
         }
     }
 
-    /** Почувствовали ли в самой комнате или рядом. */
+    /** Почувствовали ли в соседней посещённой комнате. */
     private static boolean sensedNear(Hunter hunter, Position cell, Predicate<Percept> sensor) {
         int size = (int) Math.round(Math.sqrt(hunter.knowledge().size()));
-        List<Position> around = new ArrayList<>(cell.neighbors(size));
-        around.add(cell);
-        for (Position p : around) {
+        for (Position p : cell.neighbors(size)) {
             Percept seen = hunter.knowledge().get(p).percept();
             if (seen != null && sensor.test(seen)) {
                 return true;

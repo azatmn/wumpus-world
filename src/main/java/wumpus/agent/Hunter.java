@@ -255,12 +255,13 @@ public final class Hunter {
         return planWalk(targets);
     }
 
-    /** Ближайшая непосещённая комната, опасность которой не доказана — но и не исключена. */
+    /**
+     * Ближайшая непосещённая комната, где яма не доказана. Живой найденный Вампус сюда не попадает:
+     * его запах чувствуется в соседней посещённой комнате на одной линии с ним, и раньше идёт выстрел.
+     */
     private boolean planRisk() {
         List<Position> targets = knowledge.values().stream()
-                .filter(k -> !k.visited() && !k.safe() && k.pit() != Status.YES
-                        && (wumpusDead || k.wumpus() != Status.YES))
-                .map(CellKnowledge::cell).toList();
+                .filter(k -> !k.visited() && k.pit() != Status.YES).map(CellKnowledge::cell).toList();
         return planWalk(targets);
     }
 
