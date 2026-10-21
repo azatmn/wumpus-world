@@ -48,6 +48,7 @@ public final class Hunter {
     private Map<Position, CellKnowledge> knowledge = new LinkedHashMap<>();
     /** Куда ведёт текущий план — для текста решения. */
     private Position walkTarget;
+    private Position shotSpot;
     private Direction shotDir;
 
     public Hunter(int size) {
@@ -145,11 +146,11 @@ public final class Hunter {
             decision = goTo(start, "стрелы нет, а Вампус жив — золото не взять, возвращаюсь к выходу");
             plan.add(Action.CLIMB);
         } else if (!wumpusDead && wumpus != null && planShot(List.of(wumpus))) {
-            decision = "Вампус в " + wumpus + " — стреляю " + shotDirection();
+            decision = "Вампус в " + wumpus + " — " + shotText();
         } else if (planExplore()) {
             decision = "иду в " + target();
         } else if (takeRisks && !wumpusDead && planShot(maybe(Kind.WUMPUS))) {
-            decision = "безопасных ходов нет — стреляю " + shotDirection() + " наугад";
+            decision = "безопасных ходов нет — " + shotText() + " наугад";
             risky = true;
         } else if (takeRisks && planRisk()) {
             decision = "безопасных ходов нет — рискую: иду в " + target();
@@ -332,12 +333,15 @@ public final class Hunter {
         plan.addAll(Planner.walk(position, facing, path));
         plan.addAll(Planner.face(Planner.facingAfter(position, facing, path), bestDir));
         plan.add(Action.SHOOT);
+        shotSpot = bestSpot;
         shotDir = bestDir;
         return true;
     }
 
-    private String shotDirection() {
-        return shotDir.title();
+    /** «стреляю вверх» или, если стрелять из другой комнаты, «иду в 12,6 и стреляю вверх». */
+    private String shotText() {
+        String shot = "стреляю " + shotDir.title();
+        return shotSpot.equals(position) ? shot : "иду в " + shotSpot + " и " + shot;
     }
 
     private List<Position> cells() {

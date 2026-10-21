@@ -39,6 +39,8 @@ public class CaveCanvas extends Pane {
     static final Color HIDDEN = Color.web("#f1efe8");
 
     private static final double MARGIN = 4;
+    /** В клетках мельче координаты налезают на значки — тогда их не пишем. */
+    private static final double MIN_CELL_FOR_LABEL = 36;
 
     private final Mode mode;
     private final Canvas canvas = new Canvas();
@@ -106,6 +108,9 @@ public class CaveCanvas extends Pane {
                 g.setStroke(GRID);
                 g.setLineWidth(1);
                 g.strokeRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+                if (cell < MIN_CELL_FOR_LABEL) {
+                    continue;
+                }
                 g.setFill(MUTED);
                 g.setFont(Font.font("PT Sans", Math.max(8, cell * 0.14)));
                 g.setTextAlign(TextAlignment.LEFT);

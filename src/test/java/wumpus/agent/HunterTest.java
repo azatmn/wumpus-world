@@ -199,6 +199,20 @@ class HunterTest {
     }
 
     @Test
+    void shotFromAnotherRoomSaysWhereHunterGoes() {
+        World blind = new World(CaveGenerator.generate(new CaveSpec(6, 20, 1L)));
+        List<Turn> j = play(blind).journal();
+        assertEquals(p(5, 3), j.get(7).at());
+        assertEquals("безопасных ходов нет — иду в 3,1 и стреляю вправо наугад", j.get(7).decision());
+        assertEquals(p(3, 1), j.get(8).at());
+
+        World aimed = new World(CaveGenerator.generate(new CaveSpec(12, 20, 3L)));
+        j = play(aimed).journal();
+        assertEquals(p(12, 7), j.get(6).at());
+        assertEquals("Вампус в 10,6 — иду в 12,6 и стреляю вверх", j.get(6).decision());
+    }
+
+    @Test
     void cautiousHunterLeavesInsteadOfRisk() {
         Cave cave = new Cave(4, p(1, 4), p(1, 3), Set.of(p(3, 1), p(4, 2)));
         World world = new World(cave);

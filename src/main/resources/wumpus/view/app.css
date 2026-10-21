@@ -96,3 +96,14 @@
 .text-area {
     -fx-font-size: 12.5px;
 }
+
+.scroll-pane.panel, .scroll-pane.panel > .viewport {
+    -fx-background-color: #ffffff;
+    -fx-background-insets: 0;
+}
+
+.scroll-pane.panel {
+    -fx-padding: 0;
+    -fx-border-color: #e4e2dc;
+    -fx-border-width: 0 0 0 1;
+}

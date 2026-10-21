@@ -187,6 +187,17 @@ class GameControllerTest {
     }
 
     @Test
+    void deadHunterLearnsNothingFromDeathRoom() {
+        GameController c = new GameController();
+        c.newCave(new CaveSpec(6, 20, 1L));
+        while (!c.world().over()) {
+            c.stepOnce();
+        }
+        assertFalse(c.world().alive());
+        assertNull(c.hunter().perceptAt(c.world().position()), "в яме охотник уже не измеряет и не пишет «жив здесь»");
+    }
+
+    @Test
     void riskSwitchRestartsWithNewHunter() {
         // ветерок у старта: с риском охотник стреляет наугад, без риска сразу уходит
         GameController c = new GameController(new Cave(4, p(1, 4), p(1, 3), Set.of(p(3, 1), p(4, 2))));

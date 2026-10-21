@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
@@ -163,7 +164,7 @@ public class WumpusApp extends Application {
         return box;
     }
 
-    private VBox buildPanel() {
+    private ScrollPane buildPanel() {
         Label state = new Label("Состояние");
         state.getStyleClass().add("section");
         GridPane grid = new GridPane();
@@ -212,10 +213,15 @@ public class WumpusApp extends Application {
         settings.getStyleClass().add("section");
         VBox panel = new VBox(6, state, grid, result, settings, showTruth, takeRisks,
                 new Label("Скорость"), speed, speedLabel, legendTitle, legend);
-        panel.getStyleClass().add("panel");
-        panel.setPrefWidth(280);
-        panel.setMinWidth(240);
-        return panel;
+        panel.setPadding(new Insets(12));
+        // в низком окне панель прокручивается, а не обрезается
+        ScrollPane scroll = new ScrollPane(panel);
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.getStyleClass().add("panel");
+        scroll.setPrefWidth(290);
+        scroll.setMinWidth(250);
+        return scroll;
     }
 
     private VBox buildJournal() {
