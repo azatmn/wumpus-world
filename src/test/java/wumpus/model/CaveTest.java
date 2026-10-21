@@ -81,7 +81,7 @@ class CaveTest {
         assertThrows(IllegalArgumentException.class, () -> new Cave(Cave.MIN_SIZE - 1, p(1, 1), p(1, 2), Set.of()));
         assertThrows(IllegalArgumentException.class, () -> new Cave(Cave.MAX_SIZE + 1, p(1, 1), p(1, 2), Set.of()));
         assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(0, 1), p(1, 1), Set.of()), "Вампус вне поля");
-        assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(1, 1), p(1, 5), Set.of()), "золото вне поля");
+        assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(1, 4), p(1, 5), Set.of()), "золото вне поля, хотя рядом с Вампусом");
         assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(1, 1), p(1, 2), Set.of(p(9, 9))), "яма вне поля");
         assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(4, 1), p(3, 1), Set.of()), "Вампус на старте");
         assertThrows(IllegalArgumentException.class, () -> new Cave(4, p(1, 1), p(1, 3), Set.of()), "золото не рядом с Вампусом");

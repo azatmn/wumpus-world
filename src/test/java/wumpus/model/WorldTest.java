@@ -51,6 +51,12 @@ class WorldTest {
     }
 
     @Test
+    void firstPerceptAlreadyAtStart() {
+        World w = new World(new Cave(4, p(1, 1), p(1, 2), Set.of(p(3, 1))));
+        assertEquals(new Percept(false, true, false, false, false), w.percept());
+    }
+
+    @Test
     void stepsOfTaskExample() {
         World w = pdf();
         run(w, TURN_RIGHT);
