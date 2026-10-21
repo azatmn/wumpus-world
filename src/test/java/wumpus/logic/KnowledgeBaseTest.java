@@ -146,6 +146,59 @@ class KnowledgeBaseTest {
     }
 
     @Test
+    void maybeIsRecheckedAfterNewMeasurements() {
+        KnowledgeBase kb = new KnowledgeBase(4);
+        sense(kb, 4, 1, false, false, false);
+        assertEquals(MAYBE, status(kb, PIT, 3, 2));
+        assertEquals(MAYBE, status(kb, PIT, 4, 3));
+        sense(kb, 4, 2, false, true, false);
+        sense(kb, 3, 1, true, false, false);
+        assertEquals(NO, status(kb, PIT, 3, 2));
+        assertEquals(YES, status(kb, PIT, 4, 3));
+    }
+
+    @Test
+    void wumpusAndGoldAreNeverInPit() {
+        KnowledgeBase kb = new KnowledgeBase(4);
+        kb.tell(new Clause(Literal.of(f(WUMPUS, 2, 2))));
+        assertEquals(NO, status(kb, PIT, 2, 2));
+        kb.tell(new Clause(Literal.of(f(GOLD, 1, 2))));
+        assertEquals(NO, status(kb, PIT, 1, 2));
+    }
+
+    @Test
+    void onlyOneGold() {
+        KnowledgeBase kb = new KnowledgeBase(4);
+        kb.tell(new Clause(Literal.of(f(GOLD, 2, 2))));
+        assertEquals(NO, status(kb, GOLD, 1, 2));
+        assertEquals(NO, status(kb, GOLD, 3, 2));
+    }
+
+    @Test
+    void foundModelsAreReused() {
+        KnowledgeBase kb = new KnowledgeBase(4);
+        sense(kb, 4, 1, false, false, false);
+        List<Fact> all = new ArrayList<>();
+        for (Kind kind : Kind.values()) {
+            for (int row = 1; row <= 4; row++) {
+                for (int col = 1; col <= 4; col++) {
+                    all.add(f(kind, row, col));
+                }
+            }
+        }
+        kb.statuses(all);
+        assertTrue(kb.solverCalls() < all.size(), "запусков DPLL: " + kb.solverCalls() + " на " + all.size() + " фактов");
+    }
+
+    @Test
+    void badSizeRejected() {
+        assertThrows(IllegalArgumentException.class, () -> new KnowledgeBase(1));
+        assertThrows(IllegalArgumentException.class, () -> new KnowledgeBase(13));
+        assertDoesNotThrow(() -> new KnowledgeBase(2));
+        assertDoesNotThrow(() -> new KnowledgeBase(12));
+    }
+
+    @Test
     void contradictionIsReported() {
         KnowledgeBase kb = new KnowledgeBase(4);
         kb.tell(new Clause(Literal.of(f(PIT, 2, 2))));

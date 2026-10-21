@@ -68,7 +68,7 @@ public final class Dpll {
         while (trailSize > size) {
             value[Math.abs(trail[--trailSize])] = 0;
         }
-        propagated = Math.min(propagated, size);
+        propagated = size;
     }
 
     /** Подготовить слежение и единичные предложения. false — противоречие уже на старте. */

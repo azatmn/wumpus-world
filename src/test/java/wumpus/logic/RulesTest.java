@@ -67,6 +67,7 @@ class RulesTest {
         assertEquals(List.of("W(3,1) ∨ W(2,1) ∨ W(1,1)"), text(Rules.arrow(p(4, 1), Direction.UP, true, 4)));
         assertEquals(List.of("¬W(4,2)", "¬W(4,3)", "¬W(4,4)"), text(Rules.arrow(p(4, 1), Direction.RIGHT, false, 4)));
         assertEquals(List.of(), text(Rules.arrow(p(4, 1), Direction.LEFT, false, 4)), "у стены стрела никуда не летит");
+        assertEquals(List.of(), text(Rules.arrow(p(4, 1), Direction.LEFT, true, 4)), "и пустого предложения не появляется");
     }
 
     @Test

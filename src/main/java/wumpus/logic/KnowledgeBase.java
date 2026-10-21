@@ -24,6 +24,7 @@ public final class KnowledgeBase {
     private final List<int[]> encoded = new ArrayList<>();
     /** Точные выводы не меняются: база только растёт. */
     private final Map<Fact, Status> settled = new HashMap<>();
+    private int solverCalls;
 
     public KnowledgeBase(int size) {
         if (size < Cave.MIN_SIZE || size > Cave.MAX_SIZE) {
@@ -112,10 +113,16 @@ public final class KnowledgeBase {
     }
 
     private boolean[] solveWith(int lit) {
+        solverCalls++;
         List<int[]> formula = new ArrayList<>(encoded.size() + 1);
         formula.addAll(encoded);
         formula.add(new int[]{lit});
         return Dpll.solve(3 * size * size, formula);
+    }
+
+    /** Сколько раз запускался DPLL — для проверки, что найденные расстановки переиспользуются. */
+    int solverCalls() {
+        return solverCalls;
     }
 
     private int encode(Literal literal) {
