@@ -1,0 +1,45 @@
+@startuml usecase
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+left to right direction
+title Диаграмма прецедентов
+
+actor "Пользователь" as user
+actor "Охотник (агент)" as hunter
+
+rectangle "Мир Вампуса" {
+  usecase "Открыть пример из задания" as UC1
+  usecase "Создать случайную пещеру\n(размер, доля ям, seed)" as UC2
+  usecase "Сделать шаг вывода" as UC3
+  usecase "Запустить / приостановить\nигру" as UC4
+  usecase "Начать сначала" as UC5
+  usecase "Скрыть / показать\nнастоящую пещеру" as UC6
+  usecase "Разрешить / запретить риск" as UC7
+  usecase "Смотреть знания охотника\nи журнал" as UC8
+  usecase "Проверить ввод" as UCV
+  usecase "Измерить датчиками" as H1
+  usecase "Записать в базу знаний\n(TELL)" as H2
+  usecase "Спросить базу знаний\n(ASK)" as H3
+  usecase "Выбрать действие" as H4
+}
+
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+user --> UC5
+user --> UC6
+user --> UC7
+user --> UC8
+UC2 ..> UCV : <<include>>
+UC3 ..> H1 : <<include>>
+UC4 ..> H1 : <<include>>
+hunter --> H1
+hunter --> H2
+hunter --> H3
+hunter --> H4
+H1 ..> H2 : <<include>>
+H4 ..> H3 : <<include>>
+@enduml

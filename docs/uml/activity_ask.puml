@@ -1,0 +1,40 @@
+@startuml activity_ask
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+title Диаграмма деятельности: вывод статуса факта (ASK)
+
+start
+:Факт, например P(3,2) — «в 3,2 яма»;
+if (Статус уже доказан раньше?) then (да)
+  :Вернуть сохранённый статус\n(база только растёт);
+  stop
+endif
+if (В найденных расстановках\nфакт бывал истинным?) then (да)
+else (нет)
+  :DPLL: база знаний + P(3,2);
+  if (Выполнимо?) then (да)
+    :Сохранить найденную расстановку;
+  else (нет)
+    :Истинным быть не может;
+  endif
+endif
+if (В найденных расстановках\nфакт бывал ложным?) then (да)
+else (нет)
+  :DPLL: база знаний + ¬P(3,2);
+  if (Выполнимо?) then (да)
+    :Сохранить найденную расстановку;
+  else (нет)
+    :Ложным быть не может;
+  endif
+endif
+if (Возможны оба значения?) then (да)
+  :MAYBE (P?);
+elseif (Возможно только «да») then (да)
+  :YES (P!) — запомнить;
+else
+  :NO — запомнить;
+endif
+stop
+@enduml

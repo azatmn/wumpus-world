@@ -1,0 +1,38 @@
+@startuml sequence_step
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+title Диаграмма последовательности: кнопка «Шаг»
+
+actor "Пользователь" as user
+participant "WumpusApp" as app
+participant "GameController" as ctl
+participant "Hunter" as hunter
+participant "KnowledgeBase" as kb
+participant "Dpll" as dpll
+participant "World" as world
+
+user -> app : нажать «Шаг»
+app -> ctl : stepOnce()
+loop пока не выполнено всё решение
+  ctl -> world : percept()
+  ctl -> hunter : next(percept)
+  opt план пуст — новый шаг вывода
+    hunter -> kb : statuses(все факты)
+    loop для фактов без готового ответа
+      kb -> dpll : solve(база + факт)
+      dpll --> kb : расстановка или «невыполнимо»
+    end
+    kb --> hunter : нет / может быть / да
+    hunter -> hunter : выбрать цель, построить план,\nзаписать шаг в журнал
+  end
+  hunter --> ctl : действие
+  ctl -> world : execute(действие)
+  world --> ctl : измерение
+  ctl -> hunter : perceive(измерение)
+  hunter -> kb : tell(правила для новой комнаты)
+end
+ctl --> app
+app -> app : перерисовать карты,\nсостояние и журнал
+@enduml

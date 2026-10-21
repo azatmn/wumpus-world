@@ -1,0 +1,103 @@
+@startuml class_app
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+left to right direction
+title Диаграмма классов: охотник, управление и окно
+
+package wumpus.agent {
+  class Hunter {
+    -kb: KnowledgeBase
+    -position: Position
+    -facing: Direction
+    -plan: Deque<Action>
+    -journal: List<Turn>
+    -takeRisks: boolean
+    +next(p: Percept): Action
+    +perceive(p: Percept)
+    +knowledge(): Map<Position, CellKnowledge>
+    +journal(): List<Turn>
+  }
+  class Planner {
+    +{static} path(from, to, allowed, size): List<Position>
+    +{static} cheapest(from, facing, targets, allowed, size): List<Position>
+    +{static} walk(from, facing, path): List<Action>
+    +{static} face(from, to): List<Action>
+  }
+  class CellKnowledge <<record>> {
+    +cell: Position
+    +percept: Percept
+    +pit: Status
+    +wumpus: Status
+    +gold: Status
+    +safe: boolean
+  }
+  class Turn <<record>> {
+    +number: int
+    +at: Position
+    +percept: Percept
+    +conclusions: List<String>
+    +decision: String
+    +risky: boolean
+  }
+}
+
+package wumpus.controller {
+  class GameController {
+    -world: World
+    -hunter: Hunter
+    -running: boolean
+    -speed: int
+    +stepOnce()
+    +start()
+    +pause()
+    +tick(nowNanos: long)
+    +restart()
+    +newCave(spec: CaveSpec)
+    +pdfExample()
+    +setTakeRisks(b: boolean)
+  }
+  class Marks {
+    +{static} of(h: Hunter, cell: Position): List<String>
+  }
+  class CaveForm {
+    +{static} parse(texts): FormResult<CaveSpec>
+  }
+  class FormField <<record>>
+  interface FormResult<T> <<sealed>>
+  class Texts
+  class SpeedScale
+}
+
+package wumpus.view {
+  class WumpusApp
+  class CaveCanvas
+  class Icons
+  class "FormDialog<T>" as FormDialog
+}
+
+class Application <<JavaFX>>
+class Pane <<JavaFX>>
+class Dialog <<JavaFX>>
+
+Hunter ..> Planner
+Hunter "1" *-- "*" Turn
+Hunter ..> CellKnowledge
+GameController --> Hunter
+CaveForm --> FormField
+CaveForm ..> FormResult
+WumpusApp --> GameController
+WumpusApp --> CaveCanvas
+WumpusApp ..> FormDialog
+WumpusApp ..> Texts
+WumpusApp ..> SpeedScale
+CaveCanvas ..> Marks
+CaveCanvas ..> Icons
+FormDialog ..> CaveForm
+Marks ..> Hunter
+WumpusApp --|> Application
+CaveCanvas --|> Pane
+FormDialog --|> Dialog
+@enduml

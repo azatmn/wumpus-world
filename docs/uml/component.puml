@@ -1,0 +1,37 @@
+@startuml component
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+title Диаграмма компонентов (модуль wumpus)
+
+package "Модуль wumpus" {
+  component "wumpus\n(Launcher)" as launcher
+  component "wumpus.view\n(окно JavaFX: WumpusApp,\nCaveCanvas, Icons, FormDialog)" as view
+  component "wumpus.controller\n(логика окна: GameController,\nMarks, CaveForm, Texts)" as controller
+  component "wumpus.agent\n(охотник: Hunter, Planner)" as agent
+  component "wumpus.logic\n(база знаний, правила,\nDPLL)" as logic
+  component "wumpus.model\n(пещера, генератор, мир)" as model
+  component "wumpus.util\n(SafeText)" as util
+}
+
+component "JavaFX\n(javafx.controls,\njavafx.graphics)" as javafx
+component "JUnit 6\n(только тесты)" as junit
+
+launcher ..> view
+launcher ..> javafx
+view ..> controller
+view ..> agent
+view ..> model
+view ..> javafx
+controller ..> agent
+controller ..> model
+controller ..> util
+agent ..> logic
+agent ..> model
+logic ..> model
+junit ..> model
+junit ..> logic
+junit ..> agent
+junit ..> controller
+@enduml

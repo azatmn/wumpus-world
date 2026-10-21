@@ -1,0 +1,139 @@
+@startuml class_model
+!pragma layout smetana
+skinparam dpi 150
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+title Диаграмма классов: мир и логика (пакеты wumpus.model, wumpus.logic)
+
+package wumpus.model {
+  enum Direction {
+    UP
+    RIGHT
+    DOWN
+    LEFT
+    +right(): Direction
+    +left(): Direction
+  }
+  class Position <<record>> {
+    +row: int
+    +col: int
+    +step(d: Direction): Position
+    +neighbors(size: int): List<Position>
+    +isNeighbor(p: Position): boolean
+  }
+  enum Action {
+    FORWARD
+    TURN_LEFT
+    TURN_RIGHT
+    SHOOT
+    GRAB
+    CLIMB
+  }
+  class Percept <<record>> {
+    +stench: boolean
+    +breeze: boolean
+    +glitter: boolean
+    +bump: boolean
+    +scream: boolean
+  }
+  class Cave {
+    -size: int
+    -wumpus: Position
+    -gold: Position
+    -pits: Set<Position>
+    +{static} pdfExample(): Cave
+    +start(): Position
+    +isPit(p): boolean
+    +hasBreeze(p): boolean
+    +hasStench(p): boolean
+    +nearGold(p): boolean
+  }
+  class CaveSpec <<record>> {
+    +size: int
+    +pitPercent: int
+    +seed: long
+    +pitCount(): int
+  }
+  class CaveGenerator {
+    +{static} generate(spec: CaveSpec): Cave
+  }
+  class World {
+    -position: Position
+    -facing: Direction
+    -hasArrow: boolean
+    -wumpusAlive: boolean
+    -hasGold: boolean
+    -score: int
+    +execute(a: Action): Percept
+    +percept(): Percept
+    +over(): boolean
+    +won(): boolean
+  }
+  class InvalidSettingsException
+}
+
+package wumpus.logic {
+  enum Kind {
+    PIT
+    WUMPUS
+    GOLD
+  }
+  class Fact <<record>> {
+    +kind: Kind
+    +cell: Position
+  }
+  class Literal <<record>> {
+    +fact: Fact
+    +positive: boolean
+    +negate(): Literal
+  }
+  class Clause <<record>> {
+    +literals: List<Literal>
+  }
+  enum Status {
+    NO
+    MAYBE
+    YES
+  }
+  class Rules {
+    +{static} breeze(at, felt, size): List<Clause>
+    +{static} stench(at, felt, size): List<Clause>
+    +{static} glitter(at, felt, size): List<Clause>
+    +{static} alive(at, wumpusAlive): List<Clause>
+    +{static} arrow(from, dir, scream, size): List<Clause>
+    +{static} exactlyOne(kind, size): List<Clause>
+    +{static} goldNextToWumpus(size): List<Clause>
+    +{static} notInPit(size): List<Clause>
+  }
+  class KnowledgeBase {
+    -clauses: List<Clause>
+    -settled: Map<Fact, Status>
+    +tell(c: Clause)
+    +entails(l: Literal): boolean
+    +status(f: Fact): Status
+    +statuses(facts): Map<Fact, Status>
+  }
+  class Dpll {
+    +{static} solve(vars: int, formula: List<int[]>): boolean[]
+  }
+}
+
+Position --> Direction
+World --> Cave
+World ..> Action
+World ..> Percept
+CaveGenerator ..> CaveSpec
+CaveGenerator ..> Cave
+Cave "1" o-- "*" Position
+CaveSpec ..> InvalidSettingsException
+Fact --> Kind
+Fact --> Position
+Literal --> Fact
+Clause "1" *-- "1..*" Literal
+KnowledgeBase "1" *-- "*" Clause
+KnowledgeBase ..> Rules
+KnowledgeBase ..> Dpll
+KnowledgeBase ..> Status
+Rules ..> Clause
+@enduml
