@@ -170,8 +170,8 @@ class KnowledgeBaseTest {
     void onlyOneGold() {
         KnowledgeBase kb = new KnowledgeBase(4);
         kb.tell(new Clause(Literal.of(f(GOLD, 2, 2))));
-        assertEquals(NO, status(kb, GOLD, 1, 2));
-        assertEquals(NO, status(kb, GOLD, 3, 2));
+        assertEquals(NO, status(kb, GOLD, 1, 1), "по диагонали: один Вампус в 1,2 был бы рядом с обоими");
+        assertEquals(NO, status(kb, GOLD, 3, 3));
     }
 
     @Test
