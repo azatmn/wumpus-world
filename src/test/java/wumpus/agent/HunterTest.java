@@ -154,6 +154,8 @@ class HunterTest {
         hunter.perceive(world.percept());
         assertEquals(clauses, hunter.clauseCount());
         assertEquals(p(4, 2), hunter.position(), "шаг вперёд учтён один раз");
+        assertEquals(new Percept(false, true, false, false, false), hunter.perceptAt(p(4, 2)));
+        assertNull(hunter.perceptAt(p(3, 1)));
         world.execute(hunter.next(world.percept()));
         assertEquals(p(4, 2), hunter.position(), "и next после perceive не сдвигает охотника ещё раз");
     }

@@ -392,6 +392,11 @@ public final class Hunter {
         return located(Kind.GOLD);
     }
 
+    /** Измерение в комнате, где охотник уже был (в том числе после последнего вывода), или null. */
+    public Percept perceptAt(Position cell) {
+        return visited.get(cell);
+    }
+
     public Map<Position, CellKnowledge> knowledge() {
         return Collections.unmodifiableMap(knowledge);
     }

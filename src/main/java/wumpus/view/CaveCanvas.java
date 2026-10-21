@@ -8,7 +8,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import wumpus.agent.CellKnowledge;
 import wumpus.agent.Hunter;
 import wumpus.controller.Marks;
 import wumpus.model.Cave;
@@ -139,15 +138,15 @@ public class CaveCanvas extends Pane {
     }
 
     private void drawKnowledge(GraphicsContext g, Position p, double x, double y, double cell) {
-        CellKnowledge k = hunter.knowledge().get(p);
-        g.setFill(k.visited() ? VISITED : CELL);
+        // измерения — свежие, сразу после шага; пометки — с последнего вывода
+        Percept seen = hunter.perceptAt(p);
+        g.setFill(seen != null ? VISITED : CELL);
         g.fillRect(x, y, cell, cell);
-        if (k.visited()) {
-            Percept seen = k.percept();
+        if (seen != null) {
             sensors(g, x, y, cell, seen.stench(), seen.breeze(), seen.glitter());
         }
         List<String> marks = Marks.of(hunter, p);
-        if (marks.isEmpty()) {
+        if (marks.isEmpty() || p.equals(world.position())) {
             return;
         }
         double fontSize = Math.max(9, cell * (marks.size() > 1 ? 0.2 : 0.26));
