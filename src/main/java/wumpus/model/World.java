@@ -4,6 +4,7 @@ import java.util.Objects;
 
 /**
  * Среда: выполняет действия охотника по правилам задания и возвращает измерение датчиков.
+ * Охотник стартует в (N,1) лицом вправо.
  * Счёт: −1 за действие, −10 за выстрел, −1000 за смерть, +1000 за выход с золотом.
  */
 public final class World {
@@ -15,7 +16,7 @@ public final class World {
 
     private final Cave cave;
     private Position position;
-    private Direction facing = Direction.UP;
+    private Direction facing = Direction.RIGHT;
     private boolean hasArrow = true;
     private boolean wumpusAlive = true;
     private boolean hasGold;

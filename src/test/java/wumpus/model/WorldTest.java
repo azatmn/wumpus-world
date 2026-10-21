@@ -22,8 +22,8 @@ class WorldTest {
         return new World(new Cave(4, p(1, 1), p(1, 2), Set.of()));
     }
 
-    /** В пещере open(): от старта до золота в обход Вампуса, 6 действий. */
-    private static final Action[] TO_GOLD = {TURN_RIGHT, FORWARD, TURN_LEFT, FORWARD, FORWARD, FORWARD};
+    /** В пещере open(): от старта до золота в обход Вампуса, 5 действий. */
+    private static final Action[] TO_GOLD = {FORWARD, TURN_LEFT, FORWARD, FORWARD, FORWARD};
 
     /** Из open() после TO_GOLD: убить Вампуса и взять золото, 3 действия. */
     private static final Action[] KILL_AND_GRAB = {TURN_LEFT, SHOOT, GRAB};
@@ -38,7 +38,7 @@ class WorldTest {
     void startState() {
         World w = pdf();
         assertEquals(p(4, 1), w.position());
-        assertEquals(Direction.UP, w.facing());
+        assertEquals(Direction.RIGHT, w.facing());
         assertTrue(w.hasArrow());
         assertTrue(w.alive());
         assertTrue(w.wumpusAlive());
@@ -59,8 +59,6 @@ class WorldTest {
     @Test
     void stepsOfTaskExample() {
         World w = pdf();
-        run(w, TURN_RIGHT);
-        assertEquals(Direction.RIGHT, w.facing());
         Percept second = w.execute(FORWARD);
         assertEquals(p(4, 2), w.position());
         assertEquals(new Percept(false, true, false, false, false), second, "шаг 2: ветерок");
@@ -69,14 +67,14 @@ class WorldTest {
         assertEquals(p(3, 1), w.position());
         assertEquals(new Percept(true, false, false, false, false), third, "шаг 3: запах");
         assertEquals(third, w.percept());
-        assertEquals(-7, w.score());
-        assertEquals(7, w.actions());
+        assertEquals(-6, w.score());
+        assertEquals(6, w.actions());
     }
 
     @Test
     void wallGivesBumpAndKeepsPlace() {
         World w = pdf();
-        run(w, TURN_LEFT);
+        run(w, TURN_RIGHT);
         Percept bump = w.execute(FORWARD);
         assertTrue(bump.bump());
         assertEquals(p(4, 1), w.position());
@@ -86,18 +84,18 @@ class WorldTest {
     @Test
     void pitKills() {
         World w = pdf();
-        run(w, TURN_RIGHT, FORWARD, FORWARD);
+        run(w, FORWARD, FORWARD);
         assertFalse(w.alive());
         assertTrue(w.over());
         assertFalse(w.won());
         assertEquals(p(4, 3), w.position());
-        assertEquals(-3 - 1000, w.score());
+        assertEquals(-2 - 1000, w.score());
     }
 
     @Test
     void livingWumpusKills() {
         World w = pdf();
-        run(w, FORWARD, FORWARD);
+        run(w, TURN_LEFT, FORWARD, FORWARD);
         assertFalse(w.alive());
         assertTrue(w.over());
     }
@@ -105,25 +103,26 @@ class WorldTest {
     @Test
     void noActionsAfterGameOver() {
         World w = pdf();
-        run(w, FORWARD, FORWARD);
+        run(w, TURN_LEFT, FORWARD, FORWARD);
         assertThrows(IllegalStateException.class, () -> w.execute(TURN_LEFT));
     }
 
     @Test
     void arrowKillsWumpusInLineAndScreamOnce() {
         World w = pdf();
-        run(w, FORWARD);
+        run(w, TURN_LEFT, FORWARD);
         Percept shot = w.execute(SHOOT);
         assertTrue(shot.scream());
         assertFalse(w.wumpusAlive());
         assertFalse(w.hasArrow());
-        assertEquals(-2 - 10, w.score());
+        assertEquals(-3 - 10, w.score());
         assertFalse(w.execute(TURN_LEFT).scream(), "крик слышен только в ход выстрела");
     }
 
     @Test
     void arrowFliesFarUntilWall() {
         World w = pdf();
+        run(w, TURN_LEFT);
         Percept shot = w.execute(SHOOT);
         assertTrue(shot.scream(), "Вампус через клетку от охотника — стрела долетает");
     }
@@ -131,28 +130,27 @@ class WorldTest {
     @Test
     void arrowMissesOutsideLine() {
         World w = pdf();
-        run(w, TURN_RIGHT);
         Percept shot = w.execute(SHOOT);
         assertFalse(shot.scream());
         assertTrue(w.wumpusAlive());
         assertFalse(w.hasArrow());
-        assertEquals(-2 - 10, w.score());
+        assertEquals(-1 - 10, w.score());
     }
 
     @Test
     void secondShotHasNoArrow() {
         World w = pdf();
-        run(w, TURN_RIGHT, SHOOT, TURN_LEFT);
+        run(w, SHOOT, TURN_LEFT);
         Percept again = w.execute(SHOOT);
-        assertFalse(again.scream());
+        assertFalse(again.scream(), "смотрит на Вампуса, но стрелы уже нет");
         assertTrue(w.wumpusAlive());
-        assertEquals(-4 - 10, w.score(), "без стрелы — только цена действия");
+        assertEquals(-3 - 10, w.score(), "без стрелы — только цена действия");
     }
 
     @Test
     void deadWumpusRoomIsSafe() {
         World w = pdf();
-        run(w, SHOOT, FORWARD, FORWARD);
+        run(w, TURN_LEFT, SHOOT, FORWARD, FORWARD);
         assertTrue(w.alive());
         assertEquals(p(2, 1), w.position());
     }
@@ -190,13 +188,13 @@ class WorldTest {
     @Test
     void climbOnlyAtStart() {
         World w = pdf();
-        run(w, TURN_RIGHT, FORWARD, CLIMB);
+        run(w, FORWARD, CLIMB);
         assertFalse(w.over());
         run(w, TURN_LEFT, TURN_LEFT, FORWARD, CLIMB);
         assertTrue(w.over());
         assertTrue(w.alive());
         assertFalse(w.won(), "без золота — не победа");
-        assertEquals(-7, w.score());
+        assertEquals(-6, w.score());
     }
 
     @Test
@@ -208,7 +206,7 @@ class WorldTest {
         assertTrue(w.over());
         assertTrue(w.won());
         assertEquals(p(4, 1), w.position());
-        assertEquals(1000 - 16 - 10, w.score());
+        assertEquals(1000 - 15 - 10, w.score());
     }
 
     @Test
