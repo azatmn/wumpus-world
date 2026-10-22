@@ -53,7 +53,6 @@ public class WumpusApp extends Application {
     private final Label arrowValue = new Label();
     private final Label wumpusValue = new Label();
     private final Label goldValue = new Label();
-    private final Label clausesValue = new Label();
     private final Label result = new Label();
     private final TextArea journal = new TextArea();
     private AnimationTimer timer;
@@ -170,8 +169,8 @@ public class WumpusApp extends Application {
         GridPane grid = new GridPane();
         grid.setHgap(14);
         grid.setVgap(4);
-        String[] names = {"Шаг вывода", "Действий", "Счёт", "Стрела", "Вампус", "Золото", "Предложений в базе"};
-        Label[] values = {stepValue, actionsValue, scoreValue, arrowValue, wumpusValue, goldValue, clausesValue};
+        String[] names = {"Шаг вывода", "Действий", "Счёт", "Стрела", "Вампус", "Золото"};
+        Label[] values = {stepValue, actionsValue, scoreValue, arrowValue, wumpusValue, goldValue};
         for (int i = 0; i < names.length; i++) {
             Label name = new Label(names[i]);
             name.getStyleClass().add("muted");
@@ -275,7 +274,6 @@ public class WumpusApp extends Application {
         arrowValue.setText(Texts.arrow(hunter));
         wumpusValue.setText(Texts.wumpus(hunter));
         goldValue.setText(Texts.gold(hunter));
-        clausesValue.setText(Integer.toString(hunter.clauseCount()));
         result.setText(Texts.result(world));
         result.getStyleClass().setAll("label", world.won() || !world.over() ? "status" : "message");
 
