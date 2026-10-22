@@ -41,6 +41,7 @@ public final class Hunter {
     private boolean hasGold;
     private boolean finished;
     private Action last;
+    private Percept lastPercept;
     private final Map<Position, Percept> visited = new LinkedHashMap<>();
     private final Deque<Action> plan = new ArrayDeque<>();
     private final List<Turn> journal = new ArrayList<>();
@@ -71,9 +72,7 @@ public final class Hunter {
             throw new IllegalStateException("Охотник уже выбрался из пещеры");
         }
         perceive(percept);
-        if (plan.isEmpty()) {
-            decide(percept);
-        }
+        think();
         Action action = plan.poll();
         switch (action) {
             case TURN_LEFT -> facing = facing.left();
@@ -95,6 +94,7 @@ public final class Hunter {
         if (last == null && !visited.isEmpty()) {
             return;
         }
+        lastPercept = percept;
         if (last == Action.FORWARD && !percept.bump()) {
             position = position.step(facing);
         }
@@ -124,6 +124,14 @@ public final class Hunter {
             }
         }
         last = null;
+    }
+
+    /** Подумать: если прошлое решение выполнено — сделать вывод, выбрать цель и записать шаг в журнал. */
+    public void think() {
+        if (finished || !plan.isEmpty()) {
+            return;
+        }
+        decide(lastPercept);
     }
 
     private void decide(Percept percept) {
@@ -159,7 +167,7 @@ public final class Hunter {
             decision = goTo(start, "идти некуда — возвращаюсь к выходу без золота");
             plan.add(Action.CLIMB);
         }
-        journal.add(new Turn(journal.size() + 1, position, percept, conclusions, decision, risky));
+        journal.add(new Turn(journal.size() + 1, position, percept, conclusions, decision, List.copyOf(plan), risky));
     }
 
     /** Пересчитать знания о всех комнатах: один запрос к базе на все факты. */

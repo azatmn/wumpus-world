@@ -54,6 +54,10 @@ class HunterTest {
         assertEquals("(none, Breeze, none, none, none)", j.get(1).percept().toString());
         assertEquals(List.of("рядом яма, может быть в 3,2, 4,3"), j.get(1).conclusions());
         assertEquals("иду в 3,1", j.get(1).decision());
+        assertEquals(List.of(Action.TURN_RIGHT, Action.TURN_RIGHT, Action.FORWARD, Action.TURN_RIGHT, Action.FORWARD),
+                j.get(1).actions(), "назад через 4,1: развернуться, шаг, повернуть вверх, шаг");
+        assertTrue(j.get(1).toString().endsWith("решение: иду в 3,1 · действия: направо, направо, вперёд, направо, вперёд"),
+                j.get(1).toString());
 
         assertEquals(p(3, 1), j.get(2).at());
         assertEquals("(Stench, none, none, none, none)", j.get(2).percept().toString());
@@ -173,6 +177,29 @@ class HunterTest {
         assertFalse(hunter.wumpusDead());
         hunter.perceive(world.percept());
         assertTrue(hunter.wumpusDead());
+    }
+
+    @Test
+    void thinkMakesDecisionOnlyWhenPlanIsDone() {
+        World world = new World(Cave.pdfExample());
+        Hunter hunter = new Hunter(4);
+        hunter.perceive(world.percept());
+        hunter.think();
+        assertEquals(1, hunter.journal().size());
+        assertEquals(List.of(Action.FORWARD), hunter.journal().getFirst().actions());
+        hunter.think();
+        assertEquals(1, hunter.journal().size(), "план ещё не выполнен — вторая мысль не нужна");
+        assertEquals(Action.FORWARD, hunter.next(world.percept()), "next берёт действие из уже готового плана");
+        assertEquals(1, hunter.journal().size());
+    }
+
+    @Test
+    void noThinkingAfterClimb() {
+        World world = new World(Cave.pdfExample());
+        Hunter hunter = play(world);
+        int turns = hunter.journal().size();
+        hunter.think();
+        assertEquals(turns, hunter.journal().size());
     }
 
     @Test

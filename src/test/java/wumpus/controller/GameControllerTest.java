@@ -22,7 +22,9 @@ class GameControllerTest {
         GameController c = new GameController();
         assertEquals(p(2, 1), c.cave().wumpus());
         assertEquals(p(4, 1), c.world().position());
-        assertTrue(c.hunter().journal().isEmpty());
+        assertEquals(1, c.hunter().journal().size(), "охотник думает сразу на старте");
+        assertEquals("иду в 4,2", c.hunter().journal().getFirst().decision());
+        assertEquals(0, c.world().actions(), "но ещё ничего не сделал");
         assertFalse(c.isRunning());
         assertTrue(c.isTakeRisks());
     }
@@ -31,14 +33,18 @@ class GameControllerTest {
     void stepIsOneInferenceStepOfTask() {
         GameController c = new GameController();
         c.stepOnce();
-        assertEquals(1, c.hunter().journal().size());
         assertEquals(p(4, 2), c.world().position(), "решение шага 1 выполнено: охотник в 4,2");
+        assertEquals(2, c.hunter().journal().size(), "и сразу подумал в 4,2");
+        assertEquals(p(4, 2), c.hunter().journal().getLast().at());
         c.stepOnce();
-        assertEquals(2, c.hunter().journal().size());
         assertEquals(p(3, 1), c.world().position());
-        c.stepOnce();
         assertEquals(3, c.hunter().journal().size());
+        assertEquals(p(3, 1), c.hunter().journal().getLast().at());
+        assertTrue(c.world().wumpusAlive(), "Вампус выведен, но выстрел — следующим нажатием");
+        c.stepOnce();
         assertFalse(c.world().wumpusAlive(), "шаг 3: выстрел по Вампусу в 2,1");
+        assertEquals(4, c.hunter().journal().size());
+        assertTrue(c.hunter().journal().getLast().conclusions().contains("крик — Вампус убит"));
     }
 
     @Test
@@ -168,7 +174,7 @@ class GameControllerTest {
         c.restart();
         assertSame(cave, c.cave());
         assertEquals(0, c.world().actions());
-        assertTrue(c.hunter().journal().isEmpty());
+        assertEquals(1, c.hunter().journal().size(), "новый охотник: только первая мысль на старте");
         assertFalse(c.isRunning());
     }
 
@@ -201,13 +207,13 @@ class GameControllerTest {
     void riskSwitchRestartsWithNewHunter() {
         // ветерок у старта: с риском охотник стреляет наугад, без риска сразу уходит
         GameController c = new GameController(new Cave(4, p(1, 4), p(1, 3), Set.of(p(3, 1), p(4, 2))));
-        c.stepOnce();
         assertTrue(c.hunter().journal().getFirst().risky());
+        c.stepOnce();
         c.setTakeRisks(false);
         assertFalse(c.isTakeRisks());
         assertEquals(0, c.world().actions());
-        c.stepOnce();
         assertEquals("идти некуда — возвращаюсь к выходу без золота", c.hunter().journal().getFirst().decision());
+        c.stepOnce();
         assertTrue(c.world().over());
     }
 }

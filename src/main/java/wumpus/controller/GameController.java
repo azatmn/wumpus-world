@@ -52,6 +52,8 @@ public class GameController {
         pause();
         world = new World(cave);
         hunter = new Hunter(cave.size(), takeRisks);
+        hunter.perceive(world.percept());
+        hunter.think();
     }
 
     /** Окно «Новая пещера». */
@@ -77,29 +79,31 @@ public class GameController {
         return takeRisks;
     }
 
-    /** Одно действие охотника. */
-    private void act() {
+    /** Одно действие охотника. Пришёл к цели — сразу думает дальше; true — появился новый шаг вывода. */
+    private boolean act() {
         world.execute(hunter.next(world.percept()));
-        if (world.alive()) {
-            hunter.perceive(world.percept());
-        }
         if (world.over()) {
             pause();
+            return false;
         }
+        hunter.perceive(world.percept());
+        if (hunter.planned() > 0) {
+            return false;
+        }
+        hunter.think();
+        return true;
     }
 
     /**
-     * Кнопка «Шаг»: один шаг вывода, как в задании. Охотник измеряет, делает вывод, решает —
-     * и выполняет решение целиком (доходит до цели, стреляет...). Ставит на паузу.
+     * Кнопка «Шаг»: выполнить текущее решение целиком (дойти, выстрелить...) и сразу подумать на месте —
+     * в журнале появляется следующий шаг вывода, как в задании. Ставит на паузу.
      */
     public void stepOnce() {
         pause();
-        if (world.over()) {
-            return;
+        boolean thought = false;
+        while (!world.over() && !thought) {
+            thought = act();
         }
-        do {
-            act();
-        } while (!world.over() && hunter.planned() > 0);
     }
 
     public void start() {

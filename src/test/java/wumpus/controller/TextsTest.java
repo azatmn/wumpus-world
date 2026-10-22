@@ -27,8 +27,9 @@ class TextsTest {
         assertEquals("", Texts.result(c.world()));
         c.stepOnce();
         c.stepOnce();
+        assertEquals("в 2,1, жив", Texts.wumpus(c.hunter()), "в 3,1 вывел Вампуса, выстрел — следующим шагом");
+        assertEquals("есть", Texts.arrow(c.hunter()));
         c.stepOnce();
-        // шаг 3 вывел Вампуса и выстрелил; крик охотник слышит сразу после выстрела
         assertEquals("убит", Texts.wumpus(c.hunter()));
         assertEquals("нет", Texts.arrow(c.hunter()));
         while (!c.world().over()) {
