@@ -79,30 +79,25 @@ public class GameController {
         return takeRisks;
     }
 
-    /** Одно действие охотника. Пришёл к цели — сразу думает дальше; true — появился новый шаг вывода. */
-    private boolean act() {
+    /** Одно действие охотника. Решение выполнено — сразу думает на новом месте. */
+    private void act() {
         world.execute(hunter.next(world.percept()));
         if (world.over()) {
             pause();
-            return false;
+            return;
         }
         hunter.perceive(world.percept());
-        if (hunter.planned() > 0) {
-            return false;
-        }
         hunter.think();
-        return true;
     }
 
     /**
-     * Кнопка «Шаг»: выполнить текущее решение целиком (дойти, выстрелить...) и сразу подумать на месте —
-     * в журнале появляется следующий шаг вывода, как в задании. Ставит на паузу.
+     * Кнопка «Шаг»: одно действие охотника — поворот, шаг вперёд, выстрел... Ставит на паузу.
+     * Новая строка журнала появляется, когда решение выполнено и охотник подумал на новом месте.
      */
     public void stepOnce() {
         pause();
-        boolean thought = false;
-        while (!world.over() && !thought) {
-            thought = act();
+        if (!world.over()) {
+            act();
         }
     }
 

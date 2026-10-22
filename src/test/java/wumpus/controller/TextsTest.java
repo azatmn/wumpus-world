@@ -25,9 +25,10 @@ class TextsTest {
         assertEquals("не найдено", Texts.gold(h));
         assertEquals("есть", Texts.arrow(h));
         assertEquals("", Texts.result(c.world()));
-        c.stepOnce();
-        c.stepOnce();
-        assertEquals("в 2,1, жив", Texts.wumpus(c.hunter()), "в 3,1 вывел Вампуса, выстрел — следующим шагом");
+        while (c.hunter().journal().size() < 3) {
+            c.stepOnce();
+        }
+        assertEquals("в 2,1, жив", Texts.wumpus(c.hunter()), "в 3,1 вывел Вампуса, выстрел — следующим нажатием");
         assertEquals("есть", Texts.arrow(c.hunter()));
         c.stepOnce();
         assertEquals("убит", Texts.wumpus(c.hunter()));

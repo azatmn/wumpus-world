@@ -3,6 +3,7 @@ package wumpus.controller;
 import org.junit.jupiter.api.Test;
 import wumpus.model.Cave;
 import wumpus.model.CaveSpec;
+import wumpus.model.Direction;
 import wumpus.model.Position;
 
 import java.util.Set;
@@ -30,19 +31,28 @@ class GameControllerTest {
     }
 
     @Test
-    void stepIsOneInferenceStepOfTask() {
+    void stepIsOneAction() {
         GameController c = new GameController();
         c.stepOnce();
-        assertEquals(p(4, 2), c.world().position(), "решение шага 1 выполнено: охотник в 4,2");
-        assertEquals(2, c.hunter().journal().size(), "и сразу подумал в 4,2");
-        assertEquals(p(4, 2), c.hunter().journal().getLast().at());
+        assertEquals(1, c.world().actions());
+        assertEquals(p(4, 2), c.world().position(), "решение шага 1 — вперёд в 4,2");
+        assertEquals(2, c.hunter().journal().size(), "пришёл в 4,2 — сразу подумал");
+        c.stepOnce();
+        assertEquals(2, c.world().actions());
+        assertEquals(p(4, 2), c.world().position());
+        assertEquals(Direction.DOWN, c.world().facing(), "второе нажатие — только поворот направо");
+        assertEquals(2, c.hunter().journal().size(), "поворот — не новый шаг вывода");
+        for (int i = 0; i < 3; i++) {
+            c.stepOnce();
+        }
+        assertEquals(p(4, 1), c.world().position());
+        assertEquals(2, c.hunter().journal().size(), "4,1 — по дороге, там он уже думал");
         c.stepOnce();
         assertEquals(p(3, 1), c.world().position());
-        assertEquals(3, c.hunter().journal().size());
-        assertEquals(p(3, 1), c.hunter().journal().getLast().at());
-        assertTrue(c.world().wumpusAlive(), "Вампус выведен, но выстрел — следующим нажатием");
+        assertEquals(3, c.hunter().journal().size(), "пришёл к цели 3,1 — новый шаг вывода");
+        assertTrue(c.world().wumpusAlive());
         c.stepOnce();
-        assertFalse(c.world().wumpusAlive(), "шаг 3: выстрел по Вампусу в 2,1");
+        assertFalse(c.world().wumpusAlive(), "выстрел — одно действие");
         assertEquals(4, c.hunter().journal().size());
         assertTrue(c.hunter().journal().getLast().conclusions().contains("крик — Вампус убит"));
     }
