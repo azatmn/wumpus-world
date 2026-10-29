@@ -85,8 +85,11 @@ public class WumpusApp extends Application {
         timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                controller.tick(now);
-                refresh();
+                // кадр без игры ничего не меняет: окно обновляют кнопки
+                if (controller.isRunning()) {
+                    controller.tick(now);
+                    refresh();
+                }
             }
         };
         refresh();
@@ -191,6 +194,7 @@ public class WumpusApp extends Application {
             controller.setTakeRisks(takeRisks.isSelected());
             refresh();
         });
+        speedLabel.getStyleClass().add("muted");
         speed.setValue(SpeedScale.toSlider(controller.getSpeed()));
         speed.valueProperty().addListener((o, a, b) -> {
             controller.setSpeed(SpeedScale.toSpeed(b.doubleValue()));
@@ -254,7 +258,6 @@ public class WumpusApp extends Application {
         startPause.setDisable(world.over());
         step.setDisable(world.over());
         speedLabel.setText(controller.getSpeed() + " действий в секунду");
-        speedLabel.getStyleClass().setAll("label", "muted");
 
         List<Turn> turns = hunter.journal();
         boolean changed = world != drawnWorld || world.actions() != drawnActions
